@@ -1,0 +1,480 @@
+definitions:
+  dto.OrderCreateDto:
+    properties:
+      address_id:
+        type: integer
+      num:
+        type: integer
+      product_id:
+        type: integer
+    required:
+    - address_id
+    - num
+    - product_id
+    type: object
+  dto.OrderPayDto:
+    properties:
+      order_id:
+        type: integer
+    required:
+    - order_id
+    type: object
+  dto.UserLoginDto:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  dto.UserRegisterDto:
+    properties:
+      nickname:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  dto.UserUpdateDto:
+    properties:
+      avatar:
+        type: string
+      email:
+        type: string
+      nickname:
+        type: string
+      username:
+        type: string
+    type: object
+  response.Response:
+    properties:
+      data: {}
+      message:
+        type: string
+      status:
+        type: integer
+    type: object
+  service.UploadVo:
+    properties:
+      path:
+        type: string
+      url:
+        type: string
+    type: object
+  vo.LoginUserVo:
+    properties:
+      token:
+        type: string
+      user:
+        $ref: '#/definitions/vo.UserVo'
+    type: object
+  vo.MoneyVo:
+    properties:
+      money:
+        type: number
+    type: object
+  vo.ProductListVo:
+    properties:
+      products:
+        items:
+          $ref: '#/definitions/vo.Products'
+        type: array
+      total:
+        type: integer
+    type: object
+  vo.ProductVo:
+    properties:
+      boss_avatar:
+        type: string
+      boss_id:
+        type: integer
+      boss_name:
+        type: string
+      category:
+        type: integer
+      created_at:
+        type: integer
+      discount:
+        type: string
+      id:
+        type: integer
+      image_url:
+        type: string
+      images:
+        description: 商品详情
+        items:
+          type: string
+        type: array
+      info:
+        type: string
+      name:
+        type: string
+      on_sale:
+        type: boolean
+      price:
+        type: number
+      stock:
+        type: integer
+      title:
+        type: string
+      view:
+        type: integer
+    type: object
+  vo.Products:
+    properties:
+      category:
+        type: integer
+      discount:
+        type: string
+      image_url:
+        type: string
+      info:
+        type: string
+      price:
+        type: number
+      stock:
+        type: integer
+      title:
+        type: string
+    type: object
+  vo.UserVo:
+    properties:
+      avatar:
+        type: string
+      create_at:
+        type: integer
+      email:
+        description: Type     int    `json:"type"`
+        type: string
+      id:
+        type: integer
+      nickname:
+        type: string
+      status:
+        type: string
+      username:
+        type: string
+    type: object
+info:
+  contact: {}
+  title: mall 后台API服务
+  version: "1.0"
+paths:
+  /api/v1/avatar:
+    post:
+      parameters:
+      - description: 登录凭证
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 头像文件
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/vo.UserVo'
+              type: object
+      summary: 上传头像
+      tags:
+      - 用户相关路由
+  /api/v1/money:
+    post:
+      parameters:
+      - description: 登录凭证
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/vo.MoneyVo'
+              type: object
+      summary: 显示金额
+      tags:
+      - 用户相关路由
+  /api/v1/orders:
+    get:
+      parameters:
+      - description: 登录凭证
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: 获取订单列表
+      tags:
+      - 订单操作
+    post:
+      parameters:
+      - description: 登录凭证
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 创建订单参数
+        in: body
+        name: OrderCreateDto
+        required: true
+        schema:
+          $ref: '#/definitions/dto.OrderCreateDto'
+      produces:
+      - application/json
+      responses: {}
+      summary: 创建订单
+      tags:
+      - 订单操作
+  /api/v1/pay:
+    post:
+      parameters:
+      - description: 登录凭证
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 支付订单参数
+        in: body
+        name: OrderPayDto
+        required: true
+        schema:
+          $ref: '#/definitions/dto.OrderPayDto'
+      produces:
+      - application/json
+      responses: {}
+      summary: 支付订单
+      tags:
+      - 订单操作
+  /api/v1/product:
+    get:
+      parameters:
+      - in: query
+        name: category
+        type: integer
+      - in: query
+        name: info
+        type: string
+      - in: query
+        name: page
+        type: integer
+      - description: NOTE 可以写到配置文件中
+        in: query
+        name: size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/vo.ProductListVo'
+              type: object
+      summary: 获取产品列表
+      tags:
+      - 商品相关路由
+    post:
+      parameters:
+      - description: 登录凭证
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 文件
+        in: formData
+        name: file
+        required: true
+        type: file
+      - in: formData
+        name: category
+        type: integer
+      - in: formData
+        name: discount
+        type: string
+      - in: formData
+        name: img_url
+        type: string
+      - in: formData
+        name: info
+        type: string
+      - in: formData
+        name: name
+        type: string
+      - in: formData
+        name: on_sale
+        type: boolean
+      - in: formData
+        name: price
+        type: number
+      - in: formData
+        name: stock
+        type: integer
+      - in: formData
+        name: title
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/vo.ProductVo'
+              type: object
+      summary: 创建商品
+      tags:
+      - 商品相关路由
+  /api/v1/product/{id}:
+    get:
+      parameters:
+      - description: 产品ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/vo.ProductVo'
+              type: object
+      summary: 获取产品信息
+      tags:
+      - 商品相关路由
+  /api/v1/upload:
+    post:
+      parameters:
+      - description: 登录凭证
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 文件
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/service.UploadVo'
+              type: object
+      summary: 上传文件
+      tags:
+      - 上传文件
+  /api/v1/user:
+    put:
+      parameters:
+      - description: 登录凭证
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 更新用户信息参数
+        in: body
+        name: UserUpdateDto
+        schema:
+          $ref: '#/definitions/dto.UserUpdateDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/vo.UserVo'
+              type: object
+      summary: 更新用户信息
+      tags:
+      - 用户相关路由
+  /api/v1/user/login:
+    post:
+      parameters:
+      - description: 登录参数
+        in: body
+        name: UserLoginDto
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserLoginDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/vo.LoginUserVo'
+              type: object
+      summary: 用户登录
+      tags:
+      - 用户相关路由
+  /api/v1/user/register:
+    post:
+      parameters:
+      - description: 注册参数
+        in: body
+        name: UserRegisterDto
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserRegisterDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 用户注册
+      tags:
+      - 用户相关路由
+swagger: "2.0"
